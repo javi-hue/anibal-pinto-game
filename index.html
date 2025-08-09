@@ -1,42 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegramas Urgentes - Aníbal Pinto</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Telegramas Urgentes - Aníbal Pinto (1876-1881)</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="container">
     <header>
-        <h1>📜 Telegramas Urgentes</h1>
-        <h2>Gobierno de Aníbal Pinto</h2>
+      <h1>📜 Telegramas Urgentes</h1>
+      <h2>Gobierno de Aníbal Pinto (1876-1881)</h2>
     </header>
-
-    <main>
-        <div id="status">
-            <p>💰 Recursos: <span id="resources">50</span></p>
-            <p>⚖️ Opinión Pública: <span id="publicOpinion">50</span></p>
-            <p>⚔️ Poder Militar: <span id="militaryPower">50</span></p>
-        </div>
-
-        <div id="telegram">
-            <p id="message">Presiona "Iniciar" para comenzar.</p>
-        </div>
-
-        <div id="choices">
-            <button id="choice1" disabled>Opción 1</button>
-            <button id="choice2" disabled>Opción 2</button>
-        </div>
-
-        <p id="timer">⏳ Tiempo: <span id="timeLeft">20</span>s</p>
-        <button id="startBtn">Iniciar</button>
-    </main>
-
-    <footer>
-        <p>Juego educativo sobre la presidencia de Aníbal Pinto (1876-1881)</p>
-    </footer>
-
-    <script src="game.js"></script>
+    <section id="status-bars">
+      <div class="bar-container">
+        <label>Recursos</label>
+        <div class="bar-bg"><div id="bar-resources" class="bar-fill"></div></div>
+      </div>
+      <div class="bar-container">
+        <label>Opinión Pública</label>
+        <div class="bar-bg"><div id="bar-public" class="bar-fill"></div></div>
+      </div>
+      <div class="bar-container">
+        <label>Poder Militar</label>
+        <div class="bar-bg"><div id="bar-military" class="bar-fill"></div></div>
+      </div>
+      <div class="bar-container">
+        <label>Apoyo Legislativo</label>
+        <div class="bar-bg"><div id="bar-legislation" class="bar-fill"></div></div>
+      </div>
+    </section>
+    <section id="telegram-section">
+      <p id="telegram-text" class="telegram-text">Presiona "Iniciar" para comenzar.</p>
+    </section>
+    <section id="choices-section">
+      <button id="choice1" class="choice-btn" disabled></button>
+      <button id="choice2" class="choice-btn" disabled></button>
+    </section>
+    <section id="timer-section">
+      ⏳ Tiempo restante: <span id="timer">20</span> s
+    </section>
+    <section id="control-section">
+      <button id="start-btn">Iniciar Juego</button>
+      <button id="save-btn" disabled>Guardar Progreso</button>
+      <button id="load-btn">Cargar Progreso</button>
+      <button id="reset-btn">Reiniciar Juego</button>
+    </section>
+  </div>
+  <script src="game.js"></script>
 </body>
 </html>
-
