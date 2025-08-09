@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegramas Urgentes: La Presidencia de Aníbal Pinto</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style id="app-style">
+    body {
+      font-family: 'Playfair Display', serif;
+      background-color: #f5f0e1;
+      background-image: url('https://cdn.pixabay.com/photo/2015/12/03/08/50/paper-1074131_1280.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    .parchment {
+      background-image: url('https://cdn.pixabay.com/photo/2017/02/08/12/46/paper-2048162_1280.jpg');
+      background-size: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .title-font {
+      font-family: 'IM Fell English', serif;
+    }
+    
+    .telegram-text {
+      font-family: 'IM Fell English', serif;
+      line-height: 1.6;
+    }
+    
+    .option-button {
+      transition: all 0.3s ease;
+      background-color: #d5be91;
+      border: 2px solid #8c7756;
+    }
+    
+    .option-button:hover {
+      background-color: #8c7756;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .progress-bar {
+      height: 24px;
+      border-radius: 12px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      transition: width 0.5s ease-out;
+    }
+    
+    .timer-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: conic-gradient(transparent 0%, #8c7756 0%);
+      transform: rotate(-90deg);
+      transition: background 0.1s linear;
+    }
+    
+    .timer-circle-inner {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f5f0e1;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-out {
+      animation: fadeOut 0.5s ease-out;
+    }
+    
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    
+    .seal {
+      background-image: url('https://cdn.pixabay.com/photo/2013/07/13/12/11/seal-159031_1280.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      opacity: 0.7;
+      transform: rotate(15deg);
+      right: 30px;
+      bottom: 30px;
+      z-index: 10;
+    }
+
+    @media (max-width: 640px) {
+      .progress-bar {
+        height: 18px;
+      }
+      .option-button {
+        padding: 8px;
+      }
+      .seal {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <!-- Title Screen -->
+  <div id="title-screen" class="w-full max-w-3xl parchment p-8 text-center fade-in">
+    <h1 class="title-font text-5xl md:text-6xl font-bold text-amber-900 mb-6">Telegramas Urgentes</h1>
+    <h2 class="title-font text-3xl md:text-4xl text-amber-800 mb-10">La Presidencia de Aníbal Pinto</h2>
+    <p class="mb-10 italic text-amber-800">Chile, 1876-1881</p>
+    
+    <div class="my-10 flex flex-col space-y-4 items-center">
+      <button id="start-button" class="option-button title-font text-2xl px-8 py-4 text-amber-900 rounded-lg hover:text-amber-50">
+        Comenzar
+      </button>
+      <div id="continue-options" class="hidden space-y-4 w-full max-w-xs">
+        <button id="resume-button" class="option-button title-font text-xl w-full px-6 py-3 text-amber-900 rounded-lg hover:text-amber-50">
+          Reanudar partida
+        </button>
+        <button id="new-game-button" class="option-button title-font text-xl w-full px-6 py-3 text-amber-900 rounded-lg hover:text-amber-50">
+          Nueva partida
+        </button>
+      </div>
+    </div>
+    
+    <div class="mt-16 text-sm text-amber-700">
+      <p class="mb-2"><strong>20 decisiones</strong> · <strong>20 segundos</strong> por decisión</p>
+      <p>¡El destino de Chile está en tus manos!</p>
+    </div>
+    
+    <div class="seal"></div>
+  </div>
+  
+  <!-- Game Screen -->
+  <div id="game-screen" class="hidden w-full max-w-3xl fade-in">
+    <!-- Status Bars Header -->
+    <div class="bg-amber-100 bg-opacity-90 p-4 rounded-t-lg shadow-md mb-4">
+      <div class="grid grid-cols-4 gap-2 mb-1">
+        <div class="text-center text-sm font-semibold">Economía 💰</div>
+        <div class="text-center text-sm font-semibold">Popularidad 🗳️</div>
+        <div class="text-center text-sm font-semibold">Fuerzas Armadas ⚔️</div>
+        <div class="text-center text-sm font-semibold">Desarrollo 📚</div>
+      </div>
+      
+      <div class="grid grid-cols-4 gap-2">
+        <div class="progress-bar bg-gray-300">
+          <div id="economy-bar" class="progress-bar-fill bg-yellow-500" style="width: 50%;"></div>
+        </div>
+        <div class="progress-bar bg-gray-300">
+          <div id="popularity-bar" class="progress-bar-fill bg-blue-500" style="width: 50%;"></div>
+        </div>
+        <div class="progress-bar bg-gray-300">
+          <div id="military-bar" class="progress-bar-fill bg-red-500" style="width: 50%;"></div>
+        </div>
+        <div class="progress-bar bg-gray-300">
+          <div id="development-bar" class="progress-bar-fill bg-green-500" style="width: 50%;"></div>
+        </div>
+      </div>
+      
+      <div class="mt-2 flex justify-between items-center">
+        <div class="text-sm text-amber-900">Decisión: <span id="decision-counter">1</span>/20</div>
+        <div class="flex items-center">
+          <span class="text-sm text-amber-900 mr-2">Tiempo:</span>
+          <div class="timer-circle relative flex items-center justify-center">
+            <div id="timer-fill" class="absolute inset-0 rounded-full" style="background: conic-gradient(#8c7756 0%, transparent 0%);"></div>
+            <div class="timer-circle-inner flex items-center justify-center">
+              <span id="timer-text" class="text-sm font-bold text-amber-900">20</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Telegram Content -->
+    <div class="parchment p-6 md:p-10 relative">
+      <div id="telegram-content" class="telegram-text text-center text-xl md:text-2xl text-amber-900 my-6 md:my-10">
+        <!-- Telegram text will be inserted here -->
+      </div>
+      
+      <div id="options-container" class="space-y-4 mt-8 md:mt-12">
+        <!-- Option buttons will be inserted here -->
+      </div>
+      
+      <div class="seal opacity-30"></div>
+    </div>
+  </div>
+  
+  <!-- Results Screen -->
+  <div id="results-screen" class="hidden w-full max-w-3xl parchment p-8 text-center fade-in">
+    <h2 class="title-font text-4xl text-amber-900 mb-6">Fin del Mandato</h2>
+    <h3 id="result-title" class="title-font text-2xl text-amber-800 mb-8"></h3>
+    
+    <div class="my-8">
+      <p class="text-lg mb-6">Resultados finales:</p>
+      <div class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+        <div class="text-right">Economía 💰:</div>
+        <div id="final-economy" class="text-left font-bold"></div>
+        
+        <div class="text-right">Popularidad 🗳️:</div>
+        <div id="final-popularity" class="text-left font-bold"></div>
+        
+        <div class="text-right">Fuerzas Armadas ⚔️:</div>
+        <div id="final-military" class="text-left font-bold"></div>
+        
+        <div class="text-right">Desarrollo 📚:</div>
+        <div id="final-development" class="text-left font-bold"></div>
+      </div>
+    </div>
+    
+    <p id="result-description" class="italic text-lg text-amber-800 my-8"></p>
+    
+    <div class="mt-10 flex flex-col space-y-4 items-center">
+      <button id="restart-button" class="option-button title-font text-xl px-8 py-3 text-amber-900 rounded-lg hover:text-amber-50">
+        Reiniciar partida
+      </button>
+      <button id="share-button" class="option-button title-font text-xl px-8 py-3 text-amber-900 rounded-lg hover:text-amber-50">
+        Compartir resultado
+      </button>
+    </div>
+    
+    <div class="seal"></div>
+  </div>
+
+  <script id="app-script">
+    // Game state
+    const gameState = {
+      economy: 50,
+      popularity: 50,
+      military: 50,
+      development: 50,
+      currentDecision: 0,
+      timeRemaining: 20,
+      timerInterval: null,
+      decisions: [
+        {
+          text: "Caen precios del salitre. ¿Recortamos gasto público?",
+          options: [
+            { text: "Recortar gasto", effects: { economy: 15, popularity: -10 } },
+            { text: "Aumentar impuestos", effects: { economy: 10, popularity: -15 } },
+            { text: "Pedir préstamo externo", effects: { economy: 20, development: -10 } }
+          ]
+        },
+        {
+          text: "Propuesta para abrir 10 escuelas rurales.",
+          options: [
+            { text: "Aprobar con fondos públicos", effects: { development: 15, economy: -10 } },
+            { text: "Postergar", effects: { development: -10, economy: 5 } },
+            { text: "Buscar aporte privado", effects: { development: 10, popularity: -5 } }
+          ]
+        },
+        {
+          text: "El Huáscar intercepta barcos en el norte.",
+          options: [
+            { text: "Atacar de inmediato", effects: { military: 10, economy: -10 } },
+            { text: "Esperar refuerzos", effects: { military: -5, economy: 5 } },
+            { text: "Negociar con Perú", effects: { development: 5, military: -10 } }
+          ]
+        },
+        {
+          text: "Crisis bancaria. Bancos solicitan nuevos créditos.",
+          options: [
+            { text: "Otorgar créditos", effects: { economy: 10, popularity: 5, development: -5 } },
+            { text: "Negar asistencia", effects: { economy: -10, popularity: -15 } },
+            { text: "Regular estrictamente", effects: { economy: -5, development: 10 } }
+          ]
+        },
+        {
+          text: "Tropas bolivianas avanzan hacia Antofagasta.",
+          options: [
+            { text: "Reforzar frontera", effects: { military: 15, economy: -10 } },
+            { text: "Buscar mediación", effects: { development: 5, military: -5 } },
+            { text: "Movilizar marina", effects: { military: 10, economy: -5 } }
+          ]
+        },
+        {
+          text: "Parlamentarios exigen mayor control sobre ministros.",
+          options: [
+            { text: "Aceptar cambios", effects: { popularity: 15, development: 5 } },
+            { text: "Rechazar propuesta", effects: { popularity: -15, development: -5 } },
+            { text: "Negociar términos", effects: { popularity: 5, development: 10 } }
+          ]
+        },
+        {
+          text: "Perú y Bolivia firman tratado secreto contra Chile.",
+          options: [
+            { text: "Preparar defensa", effects: { military: 15, economy: -10 } },
+            { text: "Negociar con Argentina", effects: { development: 10, economy: -5 } },
+            { text: "Declarar guerra preventiva", effects: { military: 5, popularity: 10, development: -10 } }
+          ]
+        },
+        {
+          text: "Mineros de Atacama demandan mejores condiciones.",
+          options: [
+            { text: "Legislar protecciones", effects: { development: 10, popularity: 15, economy: -5 } },
+            { text: "Ignorar demandas", effects: { economy: 5, popularity: -15 } },
+            { text: "Mediar con empresarios", effects: { economy: -5, popularity: 10, development: 5 } }
+          ]
+        },
+        {
+          text: "Combate Naval de Iquique: El Huáscar hunde La Esmeralda.",
+          options: [
+            { text: "Glorificar a Prat", effects: { popularity: 20, military: 10 } },
+            { text: "Reforzar la Armada", effects: { military: 15, economy: -15 } },
+            { text: "Buscar venganza inmediata", effects: { military: -10, popularity: 5 } }
+          ]
+        },
+        {
+          text: "Reino Unido ofrece préstamo para ferrocarriles.",
+          options: [
+            { text: "Aceptar oferta", effects: { development: 15, economy: -5, popularity: 5 } },
+            { text: "Buscar mejores términos", effects: { development: 10, economy: -2 } },
+            { text: "Rechazar injerencia", effects: { popularity: 5, development: -10 } }
+          ]
+        },
+        {
+          text: "Capturamos El Huáscar en Angamos.",
+          options: [
+            { text: "Usar para Chile", effects: { military: 15, popularity: 10 } },
+            { text: "Exhibirlo como trofeo", effects: { popularity: 15, military: 5 } },
+            { text: "Venderlo para fondos", effects: { economy: 20, military: -5, popularity: -5 } }
+          ]
+        },
+        {
+          text: "Epidemia de viruela en Santiago.",
+          options: [
+            { text: "Cuarentena estricta", effects: { popularity: -10, development: 15 } },
+            { text: "Campaña de vacunación", effects: { development: 10, economy: -10, popularity: 5 } },
+            { text: "Medidas limitadas", effects: { economy: 5, popularity: -5, development: -10 } }
+          ]
+        },
+        {
+          text: "Desembarco en Pisagua: Inicio de campaña terrestre.",
+          options: [
+            { text: "Avance cauteloso", effects: { military: 10, economy: -5 } },
+            { text: "Ataque a gran escala", effects: { military: 15, economy: -15 } },
+            { text: "Fortificar posiciones", effects: { military: 5, economy: -5 } }
+          ]
+        },
+        {
+          text: "Cámara de Diputados solicita aumento de sueldos.",
+          options: [
+            { text: "Aprobar aumento", effects: { popularity: 10, economy: -10 } },
+            { text: "Rechazar propuesta", effects: { popularity: -10, economy: 5 } },
+            { text: "Proponer austeridad general", effects: { popularity: -5, economy: 10, development: 5 } }
+          ]
+        },
+        {
+          text: "Victoria en Batalla de Tacna y Arica.",
+          options: [
+            { text: "Celebración nacional", effects: { popularity: 15, economy: -5 } },
+            { text: "Continuar campaña", effects: { military: 10, economy: -5 } },
+            { text: "Ofrecer paz a Perú", effects: { development: 15, military: -10, popularity: -5 } }
+          ]
+        },
+        {
+          text: "Plan para nueva red de telégrafos nacionales.",
+          options: [
+            { text: "Financiar proyecto", effects: { development: 20, economy: -15 } },
+            { text: "Versión reducida", effects: { development: 10, economy: -5 } },
+            { text: "Postergar iniciativa", effects: { economy: 10, development: -10 } }
+          ]
+        },
+        {
+          text: "Ocupación de Lima: ¿Qué hacer con Perú?",
+          options: [
+            { text: "Anexar territorios", effects: { military: 10, economy: 15, development: -10 } },
+            { text: "Exigir reparaciones", effects: { economy: 20, popularity: 5 } },
+            { text: "Gobierno títere", effects: { military: 15, popularity: -5 } }
+          ]
+        },
+        {
+          text: "Educación: Decreto Amunátegui permite ingreso de mujeres a universidad.",
+          options: [
+            { text: "Apoyar decreto", effects: { development: 20, popularity: -5 } },
+            { text: "Oponerse al cambio", effects: { popularity: 5, development: -15 } },
+            { text: "Implementar gradualmente", effects: { development: 10, popularity: 5 } }
+          ]
+        },
+        {
+          text: "Huelga de trabajadores portuarios en Valparaíso.",
+          options: [
+            { text: "Negociar condiciones", effects: { popularity: 10, economy: -5 } },
+            { text: "Reprimir con fuerza", effects: { popularity: -15, military: 5 } },
+            { text: "Ignorar situación", effects: { economy: -10, popularity: -10 } }
+          ]
+        },
+        {
+          text: "Tu mandato presidencial está por terminar.",
+          options: [
+            { text: "Preparar transición", effects: { development: 10, popularity: 10 } },
+            { text: "Obras públicas finales", effects: { economy: -10, development: 15 } },
+            { text: "Desfile militar", effects: { military: 10, popularity: 5 } }
+          ]
+        }
+      ]
+    };
+    
+    // DOM elements
+    const titleScreen = document.getElementById('title-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const resultsScreen = document.getElementById('results-screen');
+    const startButton = document.getElementById('start-button');
+    const resumeButton = document.getElementById('resume-button');
+    const newGameButton = document.getElementById('new-game-button');
+    const continueOptions = document.getElementById('continue-options');
+    const restartButton = document.getElementById('restart-button');
+    const shareButton = document.getElementById('share-button');
+    
+    const economyBar = document.getElementById('economy-bar');
+    const popularityBar = document.getElementById('popularity-bar');
+    const militaryBar = document.getElementById('military-bar');
+    const developmentBar = document.getElementById('development-bar');
+    
+    const decisionCounter = document.getElementById('decision-counter');
+    const telegramContent = document.getElementById('telegram-content');
+    const optionsContainer = document.getElementById('options-container');
+    
+    const timerText = document.getElementById('timer-text');
+    const timerFill = document.getElementById('timer-fill');
+    
+    const resultTitle = document.getElementById('result-title');
+    const resultDescription = document.getElementById('result-description');
+    const finalEconomy = document.getElementById('final-economy');
+    const finalPopularity = document.getElementById('final-popularity');
+    const finalMilitary = document.getElementById('final-military');
+    const finalDevelopment = document.getElementById('final-development');
+    
+    // Check for saved game
+    function checkSavedGame() {
+      const savedGame = localStorage.getItem('telegramasUrgentes');
+      if (savedGame) {
+        startButton.classList.add('hidden');
+        continueOptions.classList.remove('hidden');
+        return true;
+      }
+      return false;
+    }
+    
+    // Initialize game
+    function initializeGame(loadSaved = false) {
+      if (loadSaved) {
+        const savedGame = JSON.parse(localStorage.getItem('telegramasUrgentes'));
+        Object.assign(gameState, savedGame);
+      } else {
+        gameState.economy = 50;
+        gameState.popularity = 50;
+        gameState.military = 50;
+        gameState.development = 50;
+        gameState.currentDecision = 0;
+      }
+      
+      updateStatusBars();
+      showNextDecision();
+      
+      titleScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      resultsScreen.classList.add('hidden');
+    }
+    
+    // Update status bars
+    function updateStatusBars() {
+      economyBar.style.width = `${gameState.economy}%`;
+      popularityBar.style.width = `${gameState.popularity}%`;
+      militaryBar.style.width = `${gameState.military}%`;
+      developmentBar.style.width = `${gameState.development}%`;
+      
+      decisionCounter.textContent = gameState.currentDecision + 1;
+    }
+    
+    // Show next decision
+    function showNextDecision() {
+      if (gameState.currentDecision >= gameState.decisions.length) {
+        endGame();
+        return;
+      }
+      
+      const decision = gameState.decisions[gameState.currentDecision];
+      telegramContent.textContent = decision.text;
+      
+      // Clear previous options
+      optionsContainer.innerHTML = '';
+      
+      // Add option buttons
+      decision.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.className = 'option-button w-full text-left p-4 rounded-lg text-amber-900 hover:text-amber-50';
+        
+        // Create effect string
+        const effectsString = Object.entries(option.effects).map(([key, value]) => {
+          const symbol = value > 0 ? '+' : '';
+          const emoji = {
+            economy: '💰',
+            popularity: '🗳️',
+            military: '⚔️',
+            development: '📚'
+          }[key];
+          return `${symbol}${value}${emoji}`;
+        }).join(' ');
+        
+        button.innerHTML = `<strong>${String.fromCharCode(65 + index)}:</strong> ${option.text} <span class="text-sm italic">(${effectsString})</span>`;
+        
+        button.addEventListener('click', () => {
+          processDecision(index);
+        });
+        
+        optionsContainer.appendChild(button);
+      });
+      
+      // Start timer
+      startTimer();
+      
+      // Save game state
+      saveGameState();
+    }
+    
+    // Process decision
+    function processDecision(optionIndex) {
+      clearInterval(gameState.timerInterval);
+      const decision = gameState.decisions[gameState.currentDecision];
+      const effects = decision.options[optionIndex].effects;
+      
+      // Apply effects
+      for (const [key, value] of Object.entries(effects)) {
+        gameState[key] += value;
+        gameState[key] = Math.max(0, Math.min(100, gameState[key]));
+      }
+      
+      // Check for game over
+      if (gameState.economy <= 0 || gameState.popularity <= 0 || 
+          gameState.military <= 0 || gameState.development <= 0) {
+        endGame();
+        return;
+      }
+      
+      // Move to next decision
+      gameState.currentDecision++;
+      
+      // Update UI
+      updateStatusBars();
+      
+      // Show next decision
+      if (gameState.currentDecision < gameState.decisions.length) {
+        showNextDecision();
+      } else {
+        endGame();
+      }
+    }
+    
+    // Start timer
+    function startTimer() {
+      gameState.timeRemaining = 20;
+      timerText.textContent = gameState.timeRemaining;
+      
+      clearInterval(gameState.timerInterval);
+      
+      gameState.timerInterval = setInterval(() => {
+        gameState.timeRemaining--;
+        timerText.textContent = gameState.timeRemaining;
+        
+        // Update timer fill
+        const percentage = (gameState.timeRemaining / 20) * 100;
+        timerFill.style.background = `conic-gradient(#8c7756 ${percentage}%, transparent ${percentage}%)`;
+        
+        if (gameState.timeRemaining <= 0) {
+          clearInterval(gameState.timerInterval);
+          // Time ran out, select a negative option (usually the last one or the worst one)
+          const decision = gameState.decisions[gameState.currentDecision];
+          
+          // Find option with worst overall effect
+          let worstOptionIndex = 0;
+          let worstTotalEffect = 0;
+          
+          decision.options.forEach((option, index) => {
+            const totalEffect = Object.values(option.effects).reduce((sum, value) => sum + value, 0);
+            if (totalEffect < worstTotalEffect) {
+              worstTotalEffect = totalEffect;
+              worstOptionIndex = index;
+            }
+          });
+          
+          processDecision(worstOptionIndex);
+        }
+      }, 1000);
+    }
+    
+    // End game
+    function endGame() {
+      clearInterval(gameState.timerInterval);
+      
+      // Display results screen
+      gameScreen.classList.add('hidden');
+      resultsScreen.classList.remove('hidden');
+      
+      // Display final values
+      finalEconomy.textContent = `${gameState.economy}%`;
+      finalPopularity.textContent = `${gameState.popularity}%`;
+      finalMilitary.textContent = `${gameState.military}%`;
+      finalDevelopment.textContent = `${gameState.development}%`;
+      
+      // Determine ending type
+      let endingType = '';
+      let endingDescription = '';
+      
+      if (gameState.economy <= 0) {
+        endingType = "Colapso económico";
+        endingDescription = "La economía de Chile colapsó bajo tu mandato. El país cae en una severa depresión económica y tu presidencia será recordada como un fracaso.";
+      } else if (gameState.popularity <= 0) {
+        endingType = "Colapso político";
+        endingDescription = "Perdiste todo el apoyo popular. Tu gobierno cae en medio de protestas y agitación social.";
+      } else if (gameState.military <= 0) {
+        endingType = "Derrota militar";
+        endingDescription = "Las fuerzas armadas chilenas fueron derrotadas. El país pierde territorios y su posición en el Pacífico Sur.";
+      } else if (gameState.development <= 0) {
+        endingType = "Estancamiento nacional";
+        endingDescription = "Chile quedó estancado en su desarrollo. Las reformas educativas y de infraestructura fracasaron, dejando al país rezagado por décadas.";
+      } else if (gameState.currentDecision >= gameState.decisions.length) {
+        // Completed all decisions
+        const avgScore = (gameState.economy + gameState.popularity + gameState.military + gameState.development) / 4;
+        
+        if (avgScore >= 75) {
+          endingType = "Victoria total";
+          endingDescription = "¡Extraordinario! Lograste un mandato ejemplar. Chile prospera económicamente, gana la Guerra del Pacífico, y avanza en desarrollo nacional. Tu presidencia será recordada como una de las más exitosas.";
+        } else if (avgScore >= 50) {
+          endingType = "Victoria parcial";
+          endingDescription = "Completaste tu mandato con resultados mixtos. Chile logra victorias importantes pero enfrenta desafíos internos. Tu presidencia será recordada como efectiva pero no excepcional.";
+        } else {
+          endingType = "Supervivencia política";
+          endingDescription = "Apenas lograste terminar tu mandato. Chile sobrevive pero con graves problemas en múltiples frentes. Tu presidencia será recordada como un período de dificultades.";
+        }
+      }
+      
+      resultTitle.textContent = endingType;
+      resultDescription.textContent = endingDescription;
+      
+      // Clear saved game
+      localStorage.removeItem('telegramasUrgentes');
+    }
+    
+    // Save game state
+    function saveGameState() {
+      const gameData = {
+        economy: gameState.economy,
+        popularity: gameState.popularity,
+        military: gameState.military,
+        development: gameState.development,
+        currentDecision: gameState.currentDecision
+      };
+      
+      localStorage.setItem('telegramasUrgentes', JSON.stringify(gameData));
+    }
+    
+    // Event listeners
+    startButton.addEventListener('click', () => {
+      if (checkSavedGame()) {
+        return; // Show continue options instead
+      }
+      initializeGame(false);
+    });
+    
+    resumeButton.addEventListener('click', () => {
+      initializeGame(true);
+    });
+    
+    newGameButton.addEventListener('click', () => {
+      localStorage.removeItem('telegramasUrgentes');
+      initializeGame(false);
+    });
+    
+    restartButton.addEventListener('click', () => {
+      localStorage.removeItem('telegramasUrgentes');
+      initializeGame(false);
+    });
+    
+    shareButton.addEventListener('click', () => {
+      const resultText = `Telegramas Urgentes: La Presidencia de Aníbal Pinto
+Resultado: ${resultTitle.textContent}
+Economía: ${gameState.economy}%
+Popularidad: ${gameState.popularity}%
+Fuerzas Armadas: ${gameState.military}%
+Desarrollo: ${gameState.development}%`;
+      
+      try {
+        navigator.clipboard.writeText(resultText).then(() => {
+          alert('¡Resultado copiado al portapapeles!');
+        });
+      } catch (err) {
+        console.error('No se pudo copiar al portapapeles:', err);
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = resultText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('¡Resulta
