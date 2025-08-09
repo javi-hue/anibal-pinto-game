@@ -399,4 +399,35 @@
     currentDecision = 0;
     telegramText.textContent = "Presiona \"Iniciar\" para comenzar.";
     choice1Btn.disabled = true;
-    choice2Btn.disabled =
+    choice2Btn.disabled = true;
+    choice1Btn.textContent = "";
+    choice2Btn.textContent = "";
+    timerEl.textContent = MAX_TIME;
+    startBtn.disabled = false;
+    saveBtn.disabled = true;
+  }
+
+  function endGame() {
+    stopTimer();
+    telegramText.textContent = "🏁 Fin del mandato de Aníbal Pinto. Gracias por jugar.";
+    choice1Btn.disabled = true;
+    choice2Btn.disabled = true;
+    startBtn.disabled = false;
+    saveBtn.disabled = true;
+  }
+
+  // Event Listeners
+  choice1Btn.addEventListener("click", () => chooseOption(0));
+  choice2Btn.addEventListener("click", () => chooseOption(1));
+  startBtn.addEventListener("click", () => {
+    startBtn.disabled = true;
+    saveBtn.disabled = false;
+    loadDecision(0);
+  });
+  saveBtn.addEventListener("click", saveGame);
+  loadBtn.addEventListener("click", loadGame);
+  resetBtn.addEventListener("click", resetGame);
+
+  // Initialize UI on load
+  resetGame();
+})();
