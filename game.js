@@ -431,3 +431,65 @@
   // Initialize UI on load
   resetGame();
 })();
+function showFeedback() {
+  const feedbackEl = document.getElementById("feedback-section");
+  const feedbackText = document.getElementById("feedback-text");
+
+  let analysis = "";
+
+  // Categorías principales (puedes ajustar umbrales)
+  const militaryHigh = state.militaryPower >= 65;
+  const resourcesHigh = state.resources >= 60;
+  const publicLow = state.publicOpinion < 40;
+  const legislationLow = state.legislationSupport < 40;
+
+  // Feedback categórico tipo resumen
+  let resumen = "";
+  if (militaryHigh && resourcesHigh && !publicLow && !legislationLow) {
+    resumen = "🏆 Victoria militar + alto desarrollo nacional.";
+  } else if (militaryHigh && (publicLow || legislationLow)) {
+    resumen = "⚔️ Victoria militar pero crisis económica y social.";
+  } else if (!militaryHigh && resourcesHigh) {
+    resumen = "🛡️ Derrota militar con estabilidad interna.";
+  } else {
+    resumen = "⚠️ Colapso político y renuncia.";
+  }
+
+  // Análisis detallado (como antes)
+  function barAnalysis(name, value) {
+    if (value >= 75) return `${name}: Excelente nivel (${value}%) 👍`;
+    if (value >= 50) return `${name}: Buen nivel (${value}%) 🙂`;
+    if (value >= 25) return `${name}: Nivel bajo (${value}%) ⚠️`;
+    return `${name}: Muy bajo (${value}%) ❌`;
+  }
+
+  analysis += `<strong>Resumen final:</strong> ${resumen}<br><br>`;
+  analysis += barAnalysis("Recursos", state.resources) + "<br>";
+  analysis += barAnalysis("Opinión Pública", state.publicOpinion) + "<br>";
+  analysis += barAnalysis("Poder Militar", state.militaryPower) + "<br>";
+  analysis += barAnalysis("Apoyo Legislativo", state.legislationSupport) + "<br><br>";
+
+  if (state.resources < 30) analysis += "⚠️ Tus recursos fueron escasos, afectando la capacidad de acción.<br>";
+  else if (state.resources > 70) analysis += "👍 Buen manejo de recursos, manteniendo estabilidad.<br>";
+
+  if (state.publicOpinion < 30) analysis += "⚠️ La opinión pública fue desfavorable, debilitando tu gobierno.<br>";
+  else if (state.publicOpinion > 70) analysis += "👍 La población te apoyó fuertemente.<br>";
+
+  if (state.militaryPower < 30) analysis += "⚠️ Poder militar débil, riesgo para la defensa nacional.<br>";
+  else if (state.militaryPower > 70) analysis += "👍 Ejército fuerte y bien preparado.<br>";
+
+  if (state.legislationSupport < 30) analysis += "⚠️ Apoyo legislativo insuficiente, dificultad para leyes.<br>";
+  else if (state.legislationSupport > 70) analysis += "👍 Sólido apoyo en el Congreso.<br>";
+
+  feedbackText.innerHTML = analysis;
+  feedbackEl.style.display = "block";
+}
+function endGame() {
+  stopTimer();
+  telegramText.textContent = "🏁 Fin del mandato de Aníbal Pinto. Gracias por jugar.";
+  choice1Btn.disabled = true;
+  choice2Btn.disabled = true;
+  startBtn.disabled = false;
+  saveBtn.disabled = true;
+  showFeedback();
+}
