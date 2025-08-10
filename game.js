@@ -1,5 +1,5 @@
 (() => {
-  // State bars initial values (0-100)
+  // Estado inicial (0-100)
   let state = {
     resources: 50,
     publicOpinion: 50,
@@ -7,12 +7,11 @@
     legislationSupport: 50,
   };
 
-  const MAX_TIME = 20; // seconds per decision
+  const MAX_TIME = 20;
   let timerId = null;
   let timeLeft = MAX_TIME;
   let currentDecision = 0;
 
-  // 20 historical decisions for Aníbal Pinto's government:
   const decisions = [
     {
       text: "Crisis económica: ¿Aumentar impuestos o reducir gastos?",
@@ -270,13 +269,13 @@
         },
         {
           text: "Buscar paz duradera",
-          effects: { resources: -10, publicOpinion: +20, militaryPower: -5, legislationSupport: +20 }
+          effects: { resources: -10, publicOpinion: +20, militaryPower: -10, legislationSupport: +20 }
         }
       ]
     },
   ];
 
-  // Elements
+  // Elementos UI
   const telegramText = document.getElementById("telegram-text");
   const choice1Btn = document.getElementById("choice1");
   const choice2Btn = document.getElementById("choice2");
@@ -291,11 +290,12 @@
   const barMilitary = document.getElementById("bar-military");
   const barLegislation = document.getElementById("bar-legislation");
 
-  // Utility functions
-  function clamp(value, min=0, max=100) {
+  // Función para limitar valores entre 0 y 100
+  function clamp(value, min = 0, max = 100) {
     return Math.min(max, Math.max(min, value));
   }
 
+  // Actualiza las barras en UI
   function updateBars() {
     barResources.style.width = state.resources + "%";
     barPublic.style.width = state.publicOpinion + "%";
@@ -303,7 +303,7 @@
     barLegislation.style.width = state.legislationSupport + "%";
   }
 
-  // Timer logic
+  // Timer
   function startTimer() {
     timeLeft = MAX_TIME;
     timerEl.textContent = timeLeft;
@@ -322,7 +322,7 @@
     clearInterval(timerId);
   }
 
-  // Game logic
+  // Carga decisión actual
   function loadDecision(index) {
     if (index >= decisions.length) {
       endGame();
@@ -337,8 +337,11 @@
     choice2Btn.disabled = false;
     startTimer();
     updateBars();
+    // Oculta feedback durante la partida
+    document.getElementById("feedback-section").style.display = "none";
   }
 
+  // Aplica efectos de la opción elegida
   function applyEffects(effects) {
     state.resources = clamp(state.resources + effects.resources);
     state.publicOpinion = clamp(state.publicOpinion + effects.publicOpinion);
@@ -347,6 +350,7 @@
     updateBars();
   }
 
+  // Elegir opción
   function chooseOption(optionIndex) {
     stopTimer();
     const decision = decisions[currentDecision];
@@ -359,8 +363,8 @@
     }
   }
 
+  // Saltar decisión por timeout
   function skipDecision() {
-    // If timer runs out, just move to next without effects
     currentDecision++;
     if (currentDecision >= decisions.length) {
       endGame();
@@ -369,7 +373,7 @@
     }
   }
 
-  // Save/load game progress
+  // Guardar progreso en localStorage
   function saveGame() {
     const saveData = {
       state,
@@ -379,6 +383,7 @@
     alert("Progreso guardado.");
   }
 
+  // Cargar progreso desde localStorage
   function loadGame() {
     const saveDataRaw = localStorage.getItem("anibalPintoSave");
     if (!saveDataRaw) {
@@ -393,9 +398,10 @@
     saveBtn.disabled = false;
   }
 
+  // Reiniciar juego a estado inicial
   function resetGame() {
     stopTimer();
-    state = {resources:50, publicOpinion:50, militaryPower:50, legislationSupport:50};
+    state = { resources: 50, publicOpinion: 50, militaryPower: 50, legislationSupport: 50 };
     currentDecision = 0;
     telegramText.textContent = "Presiona \"Iniciar\" para comenzar.";
     choice1Btn.disabled = true;
@@ -405,8 +411,65 @@
     timerEl.textContent = MAX_TIME;
     startBtn.disabled = false;
     saveBtn.disabled = true;
+    // Oculta feedback
+    document.getElementById("feedback-section").style.display = "none";
+    updateBars();
   }
 
+  // Muestra feedback/analisis final con resumen categórico
+  function showFeedback() {
+    const feedbackEl = document.getElementById("feedback-section");
+    const feedbackText = document.getElementById("feedback-text");
+
+    let analysis = "";
+
+    // Categorización resumida
+    const militaryHigh = state.militaryPower >= 65;
+    const resourcesHigh = state.resources >= 60;
+    const publicLow = state.publicOpinion < 40;
+    const legislationLow = state.legislationSupport < 40;
+
+    let resumen = "";
+    if (militaryHigh && resourcesHigh && !publicLow && !legislationLow) {
+      resumen = "🏆 Victoria militar + alto desarrollo nacional.";
+    } else if (militaryHigh && (publicLow || legislationLow)) {
+      resumen = "⚔️ Victoria militar pero crisis económica y social.";
+    } else if (!militaryHigh && resourcesHigh) {
+      resumen = "🛡️ Derrota militar con estabilidad interna.";
+    } else {
+      resumen = "⚠️ Colapso político y renuncia.";
+    }
+
+    function barAnalysis(name, value) {
+      if (value >= 75) return `${name}: Excelente nivel (${value}%) 👍`;
+      if (value >= 50) return `${name}: Buen nivel (${value}%) 🙂`;
+      if (value >= 25) return `${name}: Nivel bajo (${value}%) ⚠️`;
+      return `${name}: Muy bajo (${value}%) ❌`;
+    }
+
+    analysis += `<strong>Resumen final:</strong> ${resumen}<br><br>`;
+    analysis += barAnalysis("Recursos", state.resources) + "<br>";
+    analysis += barAnalysis("Opinión Pública", state.publicOpinion) + "<br>";
+    analysis += barAnalysis("Poder Militar", state.militaryPower) + "<br>";
+    analysis += barAnalysis("Apoyo Legislativo", state.legislationSupport) + "<br><br>";
+
+    if (state.resources < 30) analysis += "⚠️ Tus recursos fueron escasos, afectando la capacidad de acción.<br>";
+    else if (state.resources > 70) analysis += "👍 Buen manejo de recursos, manteniendo estabilidad.<br>";
+
+    if (state.publicOpinion < 30) analysis += "⚠️ La opinión pública fue desfavorable, debilitando tu gobierno.<br>";
+    else if (state.publicOpinion > 70) analysis += "👍 La población te apoyó fuertemente.<br>";
+
+    if (state.militaryPower < 30) analysis += "⚠️ Poder militar débil, riesgo para la defensa nacional.<br>";
+    else if (state.militaryPower > 70) analysis += "👍 Ejército fuerte y bien preparado.<br>";
+
+    if (state.legislationSupport < 30) analysis += "⚠️ Apoyo legislativo insuficiente, dificultad para leyes.<br>";
+    else if (state.legislationSupport > 70) analysis += "👍 Sólido apoyo en el Congreso.<br>";
+
+    feedbackText.innerHTML = analysis;
+    feedbackEl.style.display = "block";
+  }
+
+  // Termina juego
   function endGame() {
     stopTimer();
     telegramText.textContent = "🏁 Fin del mandato de Aníbal Pinto. Gracias por jugar.";
@@ -414,9 +477,10 @@
     choice2Btn.disabled = true;
     startBtn.disabled = false;
     saveBtn.disabled = true;
+    showFeedback();
   }
 
-  // Event Listeners
+  // Eventos UI
   choice1Btn.addEventListener("click", () => chooseOption(0));
   choice2Btn.addEventListener("click", () => chooseOption(1));
   startBtn.addEventListener("click", () => {
@@ -428,68 +492,6 @@
   loadBtn.addEventListener("click", loadGame);
   resetBtn.addEventListener("click", resetGame);
 
-  // Initialize UI on load
+  // Inicialización
   resetGame();
 })();
-function showFeedback() {
-  const feedbackEl = document.getElementById("feedback-section");
-  const feedbackText = document.getElementById("feedback-text");
-
-  let analysis = "";
-
-  // Categorías principales (puedes ajustar umbrales)
-  const militaryHigh = state.militaryPower >= 65;
-  const resourcesHigh = state.resources >= 60;
-  const publicLow = state.publicOpinion < 40;
-  const legislationLow = state.legislationSupport < 40;
-
-  // Feedback categórico tipo resumen
-  let resumen = "";
-  if (militaryHigh && resourcesHigh && !publicLow && !legislationLow) {
-    resumen = "🏆 Victoria militar + alto desarrollo nacional.";
-  } else if (militaryHigh && (publicLow || legislationLow)) {
-    resumen = "⚔️ Victoria militar pero crisis económica y social.";
-  } else if (!militaryHigh && resourcesHigh) {
-    resumen = "🛡️ Derrota militar con estabilidad interna.";
-  } else {
-    resumen = "⚠️ Colapso político y renuncia.";
-  }
-
-  // Análisis detallado (como antes)
-  function barAnalysis(name, value) {
-    if (value >= 75) return `${name}: Excelente nivel (${value}%) 👍`;
-    if (value >= 50) return `${name}: Buen nivel (${value}%) 🙂`;
-    if (value >= 25) return `${name}: Nivel bajo (${value}%) ⚠️`;
-    return `${name}: Muy bajo (${value}%) ❌`;
-  }
-
-  analysis += `<strong>Resumen final:</strong> ${resumen}<br><br>`;
-  analysis += barAnalysis("Recursos", state.resources) + "<br>";
-  analysis += barAnalysis("Opinión Pública", state.publicOpinion) + "<br>";
-  analysis += barAnalysis("Poder Militar", state.militaryPower) + "<br>";
-  analysis += barAnalysis("Apoyo Legislativo", state.legislationSupport) + "<br><br>";
-
-  if (state.resources < 30) analysis += "⚠️ Tus recursos fueron escasos, afectando la capacidad de acción.<br>";
-  else if (state.resources > 70) analysis += "👍 Buen manejo de recursos, manteniendo estabilidad.<br>";
-
-  if (state.publicOpinion < 30) analysis += "⚠️ La opinión pública fue desfavorable, debilitando tu gobierno.<br>";
-  else if (state.publicOpinion > 70) analysis += "👍 La población te apoyó fuertemente.<br>";
-
-  if (state.militaryPower < 30) analysis += "⚠️ Poder militar débil, riesgo para la defensa nacional.<br>";
-  else if (state.militaryPower > 70) analysis += "👍 Ejército fuerte y bien preparado.<br>";
-
-  if (state.legislationSupport < 30) analysis += "⚠️ Apoyo legislativo insuficiente, dificultad para leyes.<br>";
-  else if (state.legislationSupport > 70) analysis += "👍 Sólido apoyo en el Congreso.<br>";
-
-  feedbackText.innerHTML = analysis;
-  feedbackEl.style.display = "block";
-}
-function endGame() {
-  stopTimer();
-  telegramText.textContent = "🏁 Fin del mandato de Aníbal Pinto. Gracias por jugar.";
-  choice1Btn.disabled = true;
-  choice2Btn.disabled = true;
-  startBtn.disabled = false;
-  saveBtn.disabled = true;
-  showFeedback();
-}
